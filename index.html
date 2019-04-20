@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+</head>
+<body>
+
+</body>
+<script src="./js/three.js"></script>
+<script>
+
+    var camera;
+    var scene;
+    var renderer;
+    var mesh;
+    
+    init();
+    animate();
+
+    function init() {
+        scene = new THREE.Scene(); // 创建场景
+ 
+        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000); // 创建摄影机
+        camera.position.set(5,5,5);
+
+        /* var light = new THREE.SpotLight(0xffffff); // 光源
+        light.position.set(5,5,5); */
+        var light = new THREE.DirectionalLight( 0xffffff );
+        light.position.set( 0, 1, 1 ).normalize();
+        scene.add(light);
+        
+        renderer = new THREE.WebGLRenderer(); // 创建渲染器
+        renderer.setSize(window.innerWidth, window.innerHeight); // 设置画布大小
+        renderer.setPixelRatio(window.devicePixelRatio); // 设置像素比，针对高清屏
+        renderer.setClearColor(0x000000,1); // 设置默认背景色
+
+        document.body.appendChild(renderer.domElement); // 把画笔插入到dom中
+
+        /*
+        * BoxGeometry--长方体
+        * CircleGeometry--圆形平面
+        * CylinderGeometry--圆柱体
+        * PlaneGeometry--方形平面
+        * RingGeometry--环形平面
+        * SphereGeometry--球形
+        * TextGeometry--文字
+        * TorusGeometry--圆环
+        * TubeGeometry--圆管
+        */
+        var geometry = new THREE.BoxGeometry(1, 1, 1); // 创建一个长方体，用来定义物体的形状
+        /*
+        * MeshBasicMaterial--基础材质
+        * MeshLambertMaterial--漫反射材质
+        * MeshPhongMaterial--镜面反射材质
+        * MeshDepthMaterial--根据物体上每一点到摄像机的远近来显示颜色，远的显示黑色，近的显示白色
+        * MeshNormalMaterial--根据物体上每一面的法向量方向来显示颜色
+        */
+        //var material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // 创建一个材质，用来定义物体的颜色
+        //var material = new THREE.MeshPhongMaterial( { ambient: 0x050505, color: 0x0033ff, specular: 0x555555, shininess: 30 } );
+        var loader=new THREE.TextureLoader();
+        //loader.setCrossOrigin( "Anonymous" );
+        var texture = loader.load('./assets/texture/crate.jpg');
+        //var texture = THREE.ImageUtils.loadTexture('http://wow.techbrood.com/uploads/1702/crate.jpg');
+        var material = new THREE.MeshPhongMaterial( { map: texture } );
+        mesh = new THREE.Mesh(geometry, material); // 使用形状和素材，来定义物体
+        mesh.position.set(0,0,0);
+        scene.add(mesh);
+
+        camera.lookAt(mesh.position);
+        
+        window.addEventListener( 'resize', onWindowResize, false );
+  
+        render();
+    }
+    
+    
+    function animate() {
+        mesh.rotation.x += .04;
+        mesh.rotation.y += .02;
+        render();
+        requestAnimationFrame( animate );
+    }
+    
+    
+    function render() {
+        renderer.render( scene, camera );
+    }
+    
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        render();
+    }
+
+</script>
+</html>
